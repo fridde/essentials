@@ -1,0 +1,20 @@
+{
+    "name": "fridde/essentials",
+    "description": "",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "fridde",
+            "email": "f@hehl.se"
+        }
+    ],
+    "require": {
+        "php": ">=7.0.0",
+        "yosymfony/toml": "^0.3.3",
+        "filp/whoops": "^2.1"         
+    },
+	"autoload": {
+        "psr-4": { "Fridde\\": "src/" }
+	},
+	"minimum-stability": "dev"
+}
