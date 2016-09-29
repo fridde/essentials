@@ -1,6 +1,8 @@
 <?php
 namespace Fridde;
 
+use Yosymfony\Toml\Toml;
+
 class Essentials
 {
 
@@ -11,14 +13,8 @@ class Essentials
         if (!is_readable($file)) {
             throw new \Exception('The file '.$file." is not readable or doesn't exist.");
         }
-        $toml_class = "Yosymfony\Toml\Toml";
         if ($ext == 'toml') {
-            if (class_exists($toml_class)) {
-                $parseFunction = $toml_class.'::Parse';
-                $settings = $parseFunction($file);
-            } else {
-                throw new \Exception('Tried to parse a toml-configuration file without a parser class defined.');
-            }
+                $settings = Toml::Parse($file);
         } elseif ($ext == 'json') {
             $json_string = file_get_contents($file);
             if (!$json_string) {
