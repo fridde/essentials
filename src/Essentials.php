@@ -3,6 +3,11 @@ namespace Fridde;
 
 use Yosymfony\Toml\Toml;
 
+/**
+ * This class contains the functions needed to start some applications and is
+ * TODO: 
+ */
+
 class Essentials
 {
 
@@ -15,6 +20,7 @@ class Essentials
         }
         if ($ext == 'toml') {
                 $settings = Toml::Parse($file);
+
         } elseif ($ext == 'json') {
             $json_string = file_get_contents($file);
             if (!$json_string) {
