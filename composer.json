@@ -11,7 +11,8 @@
     "require": {
         "php": ">=7.0.0",
         "yosymfony/toml": "^0.3.3",
-        "filp/whoops": "^2.1"         
+        "filp/whoops": "^2.1",
+        "tracy/tracy": "^2.4"         
     },
 	"autoload": {
         "psr-4": { "Fridde\\": "src/" }

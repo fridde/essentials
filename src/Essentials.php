@@ -1,12 +1,13 @@
 <?php
 namespace Fridde;
 
-use Yosymfony\Toml\Toml;
+use \Yosymfony\Toml\Toml;
+use \Tracy\Debugger;
 
 /**
- * This class contains the functions needed to start some applications and is
- * TODO: 
- */
+* This class contains the functions needed to start some applications and is
+* TODO:
+*/
 
 class Essentials
 {
@@ -19,7 +20,7 @@ class Essentials
             throw new \Exception('The file '.$file." is not readable or doesn't exist.");
         }
         if ($ext == 'toml') {
-                $settings = Toml::Parse($file);
+            $settings = Toml::Parse($file);
 
         } elseif ($ext == 'json') {
             $json_string = file_get_contents($file);
@@ -46,9 +47,15 @@ class Essentials
         error_reporting(E_ALL);
         ini_set('display_errors', '1');
 
+        Debugger::enable(Debugger::DETECT, __DIR__ . '/logs');
+        Debugger::$strictMode = TRUE;
+        Debugger::$logSeverity = E_NOTICE | E_WARNING;
+
+        /*
         $whoops = new \Whoops\Run;
         $whoops->pushHandler(new \Whoops\Handler\PrettyPageHandler);
         $whoops->register();
+        */
     }
 
     public static function prePrint($var)
