@@ -47,7 +47,7 @@ class Essentials
         error_reporting(E_ALL);
         ini_set('display_errors', '1');
 
-        Debugger::enable(Debugger::DETECT, __DIR__ . '/logs');
+        Debugger::enable(Debugger::DETECT, __APP_ROOT__ . '/logs');
         Debugger::$strictMode = TRUE;
         Debugger::$logSeverity = E_NOTICE | E_WARNING;
 
