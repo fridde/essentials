@@ -43,12 +43,11 @@ class Essentials
 
     public static function activateDebug()
     {
-        define("__APP_ROOT__", getenv('HTTP_HOST'));
         $GLOBALS['debug'] = true;
         error_reporting(E_ALL);
         ini_set('display_errors', '1');
 
-        Debugger::enable(Debugger::DETECT, __APP_ROOT__ . '/logs');
+        Debugger::enable(Debugger::DETECT, getenv('HTTP_HOST') . '/logs');
         Debugger::$strictMode = TRUE;
         Debugger::$logSeverity = E_NOTICE | E_WARNING;
 
