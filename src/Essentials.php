@@ -43,6 +43,7 @@ class Essentials
 
     public static function activateDebug()
     {
+        define("__APP_ROOT__", getenv('HTTP_HOST'));
         $GLOBALS['debug'] = true;
         error_reporting(E_ALL);
         ini_set('display_errors', '1');
