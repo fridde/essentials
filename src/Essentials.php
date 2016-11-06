@@ -47,20 +47,9 @@ class Essentials
         error_reporting(E_ALL);
         ini_set('display_errors', '1');
 
-        $log_dir = $_SERVER["HTTP_HOST"] . dirname($_SERVER["SCRIPT_NAME"]) . '/logs';
-        if(!is_dir($log_dir)){
-            mkdir($log_dir);
-        }
-
-        Debugger::enable(Debugger::DETECT, $log_dir);
+        Debugger::enable();
         Debugger::$strictMode = TRUE;
         Debugger::$logSeverity = E_NOTICE | E_WARNING;
-
-        /*
-        $whoops = new \Whoops\Run;
-        $whoops->pushHandler(new \Whoops\Handler\PrettyPageHandler);
-        $whoops->register();
-        */
     }
 
     public static function prePrint($var)
