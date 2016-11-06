@@ -47,7 +47,12 @@ class Essentials
         error_reporting(E_ALL);
         ini_set('display_errors', '1');
 
-        Debugger::enable(Debugger::DETECT, getenv('HTTP_HOST') . '/logs');
+        $log_dir = $_SERVER["HTTP_HOST"] . dirname($_SERVER["SCRIPT_NAME"]) . '/logs';
+        if(!is_dir($log_dir)){
+            mkdir($log_dir);
+        }
+
+        Debugger::enable(Debugger::DETECT, $log_dir);
         Debugger::$strictMode = TRUE;
         Debugger::$logSeverity = E_NOTICE | E_WARNING;
 
