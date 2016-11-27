@@ -51,12 +51,7 @@ class Essentials
         Debugger::$strictMode = TRUE;
         Debugger::$logSeverity = E_NOTICE | E_WARNING;
     }
-
-    public static function barDump()
-    {
-        Debugger::barDump(func_get_args());
-    }
-
+    
     public static function prePrint($var)
     {
         echo '<pre>';
