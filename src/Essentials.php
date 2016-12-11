@@ -12,24 +12,42 @@ use \Tracy\Debugger;
 class Essentials
 {
 
+    public static function setAppDirectory($sub_dir = "/")
+    {
+        if(substr($sub_dir, -1 , 1) !== "/"){
+            $sub_dir .= "/";
+        }
+        $GLOBALS["APP_DIR"] = $_SERVER['DOCUMENT_ROOT'] . $sub_dir;
+    }
+
     public static function getSettings($file = 'settings.toml', $prefix = "", $globalize = true)
     {
+        $possible_locations = isset($GLOBALS["APP_DIR"]) ? [$GLOBALS["APP_DIR"]] : [];
+        $possible_locations[] = $_SERVER['DOCUMENT_ROOT'];
+        $possible_locations[] = getcwd();
+
         $settings = false;
-        $ext = strtolower(pathinfo($file, PATHINFO_EXTENSION));
-        if (!is_readable($file)) {
-            throw new \Exception('The file '.$file." is not readable or doesn't exist.");
+        foreach($possible_locations as $dir){
+            $path = $dir . "/" . $file;
+            if(is_readable($path)){
+                break;
+            }
         }
+        if (!is_readable($path)) {
+            throw new \Exception('The file '.$path." is not readable or doesn't exist.");
+        }
+        $ext = strtolower(pathinfo($path, PATHINFO_EXTENSION));
         if ($ext == 'toml') {
-            $settings = Toml::Parse($file);
+            $settings = Toml::Parse($path);
 
         } elseif ($ext == 'json') {
-            $json_string = file_get_contents($file);
+            $json_string = file_get_contents($path);
             if (!$json_string) {
-                throw new \Exception("The file $file could not be read or found!");
+                throw new \Exception("The file $path could not be read or found!");
             }
             $settings = json_decode($json_string, true);
         } elseif ($ext == 'ini') {
-            $settings = parse_ini_file($file, true);
+            $settings = parse_ini_file($path, true);
         } else {
             throw new \Exception('The function getSettings has no implementation for the file extension <'.$ext.'>');
         }
