@@ -12,7 +12,7 @@ use \Tracy\Debugger;
 class Essentials
 {
 
-    public static function getSettings($globalize = true, $file = 'settings.toml', $prefix = "")
+    public static function getSettings($file = 'settings.toml', $prefix = "", $globalize = true)
     {
         $settings = false;
         $ext = strtolower(pathinfo($file, PATHINFO_EXTENSION));
@@ -51,7 +51,7 @@ class Essentials
         Debugger::$strictMode = TRUE;
         Debugger::$logSeverity = E_NOTICE | E_WARNING;
     }
-    
+
     public static function prePrint($var)
     {
         echo '<pre>';
