@@ -44,7 +44,7 @@ class Essentials
                 break;
             }
         }
-        if (!is_readable($path)) {
+        if (empty($path) || !is_readable($path)) {
             throw new \Exception('The file '.$path." is not readable or doesn't exist.");
         }
         $ext = strtolower(pathinfo($path, PATHINFO_EXTENSION));
@@ -72,7 +72,9 @@ class Essentials
 
     public static function getRoutes($file = 'routes.toml')
     {
-        return self::getSettings($file, "", false);
+        $routes = self::getSettings($file, "", false);
+        $routes = array_filter($routes["routes"]);
+        return $routes;
     }
 
     public static function activateDebug()
