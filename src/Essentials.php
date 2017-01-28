@@ -20,9 +20,20 @@ class Essentials
         $GLOBALS["APP_DIR"] = $_SERVER['DOCUMENT_ROOT'] . $sub_dir;
     }
 
+    /**
+     * [setBaseUrl description]
+     * @param [type] $dir     Should always be __DIR__, called from the index file
+     * @param string $app_dir [description]
+     */
+    public static function setBaseUrl($dir)
+    {
+        $GLOBALS["BASE_URL"] = $dir;
+    }
+
     public static function getSettings($file = 'settings.toml', $prefix = "", $globalize = true)
     {
         $possible_locations = isset($GLOBALS["APP_DIR"]) ? [$GLOBALS["APP_DIR"]] : [];
+        $possible_locations[] = $GLOBALS["BASE_URL"] ?? null;
         $possible_locations[] = $_SERVER['DOCUMENT_ROOT'];
         $possible_locations[] = getcwd();
 
@@ -57,6 +68,11 @@ class Essentials
         }
 
         return $settings;
+    }
+
+    public static function getRoutes($file = 'routes.toml')
+    {
+        return self::getSettings($file, "", false);
     }
 
     public static function activateDebug()
