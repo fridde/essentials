@@ -39,7 +39,7 @@ class Essentials
 
         $settings = false;
         foreach($possible_locations as $dir){
-            $path = $dir . "/" . $file;
+            $path = realpath($dir . "/" . $file);
             if(is_readable($path)){
                 break;
             }
