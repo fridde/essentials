@@ -12,17 +12,17 @@ use \Tracy\Debugger;
 class Essentials
 {
 
-    public static function setAppDirectory($sub_dir = null)
+    public static function setAppUrl($sub_dir = null)
     {
-        $base_url = $GLOBALS["BASE_DIR"] ?? null;
-        if(!empty($base_url) && empty($sub_dir)){
-            $sub_dir = basename($base_url);
+        $base_dir = $GLOBALS["BASE_DIR"] ?? null;
+        if(!empty($base_dir) && empty($sub_dir)){
+            $sub_dir = basename($base_dir);
         }
         $sub_dir = $sub_dir ?? "";
         if(substr($sub_dir, -1 , 1) !== "/"){
             $sub_dir .= "/";
         }
-        $GLOBALS["APP_URL"] = $_SERVER['DOCUMENT_ROOT'] . $sub_dir;
+        $GLOBALS["APP_URL"] = $_SERVER['HTTP_HOST'] . "/" . $sub_dir;
     }
 
     /**
@@ -30,15 +30,15 @@ class Essentials
      * @param [type] $dir     Should always be __DIR__, called from the index file
      * @param string $app_dir [description]
      */
-    public static function setBaseUrl($dir)
+    public static function setBaseDir($dir)
     {
         $GLOBALS["BASE_DIR"] = $dir;
     }
 
     public static function getSettings($file = 'settings.toml', $prefix = "", $globalize = true)
     {
-        $possible_locations = isset($GLOBALS["APP_URL"]) ? [$GLOBALS["APP_URL"]] : [];
-        $possible_locations[] = $GLOBALS["BASE_DIR"] ?? null;
+        $possible_locations[] = $GLOBALS["APP_URL"] ?? [];
+        $possible_locations[] = $GLOBALS["BASE_URL"] ?? null;
         $possible_locations[] = $_SERVER['DOCUMENT_ROOT'];
         $possible_locations[] = getcwd();
 
