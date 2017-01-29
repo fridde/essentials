@@ -12,8 +12,13 @@ use \Tracy\Debugger;
 class Essentials
 {
 
-    public static function setAppDirectory($sub_dir = "/")
+    public static function setAppDirectory($sub_dir = null)
     {
+        $base_url = $GLOBALS["BASE_URL"] ?? null;
+        if(!empty($base_url) && empty($sub_dir)){
+            $sub_dir = basename($base_url);
+        }
+        $sub_dir = $sub_dir ?? "";
         if(substr($sub_dir, -1 , 1) !== "/"){
             $sub_dir .= "/";
         }
