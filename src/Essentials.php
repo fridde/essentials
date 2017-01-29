@@ -14,7 +14,7 @@ class Essentials
 
     public static function setAppDirectory($sub_dir = null)
     {
-        $base_url = $GLOBALS["BASE_URL"] ?? null;
+        $base_url = $GLOBALS["BASE_DIR"] ?? null;
         if(!empty($base_url) && empty($sub_dir)){
             $sub_dir = basename($base_url);
         }
@@ -22,7 +22,7 @@ class Essentials
         if(substr($sub_dir, -1 , 1) !== "/"){
             $sub_dir .= "/";
         }
-        $GLOBALS["APP_DIR"] = $_SERVER['DOCUMENT_ROOT'] . $sub_dir;
+        $GLOBALS["APP_URL"] = $_SERVER['DOCUMENT_ROOT'] . $sub_dir;
     }
 
     /**
@@ -32,13 +32,13 @@ class Essentials
      */
     public static function setBaseUrl($dir)
     {
-        $GLOBALS["BASE_URL"] = $dir;
+        $GLOBALS["BASE_DIR"] = $dir;
     }
 
     public static function getSettings($file = 'settings.toml', $prefix = "", $globalize = true)
     {
-        $possible_locations = isset($GLOBALS["APP_DIR"]) ? [$GLOBALS["APP_DIR"]] : [];
-        $possible_locations[] = $GLOBALS["BASE_URL"] ?? null;
+        $possible_locations = isset($GLOBALS["APP_URL"]) ? [$GLOBALS["APP_URL"]] : [];
+        $possible_locations[] = $GLOBALS["BASE_DIR"] ?? null;
         $possible_locations[] = $_SERVER['DOCUMENT_ROOT'];
         $possible_locations[] = getcwd();
 
