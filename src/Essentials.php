@@ -32,13 +32,16 @@ class Essentials
      */
     public static function setBaseDir($dir)
     {
+        if(substr($dir, -1 , 1) !== "/"){
+            $dir .= '\\';
+        }
         $GLOBALS["BASE_DIR"] = $dir;
     }
 
-    public static function getSettings($file = 'settings.toml', $prefix = "", $globalize = true)
+    public static function getSettings($file = 'config/settings.toml', $prefix = "", $globalize = true)
     {
-        $possible_locations[] = $GLOBALS["APP_URL"] ?? [];
-        $possible_locations[] = $GLOBALS["BASE_URL"] ?? null;
+        $possible_locations[] = $GLOBALS["APP_URL"] ?? null;
+        $possible_locations[] = $GLOBALS["BASE_DIR"] ?? null;
         $possible_locations[] = $_SERVER['DOCUMENT_ROOT'];
         $possible_locations[] = getcwd();
 
@@ -75,7 +78,7 @@ class Essentials
         return $settings;
     }
 
-    public static function getRoutes($file = 'routes.toml')
+    public static function getRoutes($file = 'config/routes.toml')
     {
         $routes = self::getSettings($file, "", false);
         $routes = array_filter($routes["routes"]);
@@ -91,6 +94,7 @@ class Essentials
         Debugger::enable();
         Debugger::$strictMode = TRUE;
         Debugger::$logSeverity = E_NOTICE | E_WARNING;
+        Debugger::$maxDepth = 8;
     }
 
     public static function prePrint($var)
