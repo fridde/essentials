@@ -4,7 +4,7 @@ namespace Fridde;
 use Yosymfony\Toml\Toml;
 use Tracy\Debugger;
 use Monolog\{ErrorHandler, Logger};
-use Monolog\Handler\StreamHandler;
+use Monolog\Handler\{StreamHandler, BrowserConsoleHandler};
 
 
 class Essentials
@@ -110,6 +110,7 @@ class Essentials
         if(empty($GLOBALS["LOGGER"])){
             $logger = new Logger('Error handler');
             $logger->pushHandler(new StreamHandler(BASE_DIR.'log/errors.log', Logger::DEBUG));
+            $logger->pushHandler(new BrowserConsoleHandler(Logger::DEBUG));
             ErrorHandler::register($logger);
             $GLOBALS["LOGGER"] = $logger;
         }
