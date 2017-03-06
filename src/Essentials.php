@@ -5,6 +5,9 @@ use Yosymfony\Toml\Toml;
 use Tracy\Debugger;
 use Monolog\{ErrorHandler, Logger};
 use Monolog\Handler\{StreamHandler, BrowserConsoleHandler};
+use League\Container\Container;
+use League\Container\Argument\RawArgument;
+use MySQLHandler\MySQLHandler;
 
 
 class Essentials
@@ -105,15 +108,53 @@ class Essentials
         }
     }
 
-    public static function activateLogger()
+    public static function getLogger()
     {
-        if(empty($GLOBALS["LOGGER"])){
+        $container = $GLOBALS["CONTAINER"] ?? null;
+
+        if(empty($container) || !$container->has("Logger")){
             $logger = new Logger('Error handler');
             $logger->pushHandler(new StreamHandler(BASE_DIR.'log/errors.log', Logger::DEBUG));
-            $logger->pushHandler(new BrowserConsoleHandler(Logger::DEBUG));
+            //$logger->pushHandler(new BrowserConsoleHandler(Logger::DEBUG));
             ErrorHandler::register($logger);
-            $GLOBALS["LOGGER"] = $logger;
+            return $logger;
         }
+        return $container->get('Logger');
+    }
+
+    public static function registerSharedServices()
+    {
+        $args = func_get_args();
+        if(count($args) === 1 && array_filter($args[0], "is_array") == $args[0]){
+            $args = $args[0];
+        }
+
+        $container = new Container();
+        foreach($args as $service){
+            $count = count($service);
+            if($count === 2){
+                $container->share($service[0], $service[1]);
+            } elseif($count > 2){
+                $const_args = array_slice($service, 2);
+                array_walk($const_args, function(&$a){
+                    $a = new RawArgument($a);
+                });
+                $container->share($service[0], $service[1])
+                    ->withArguments($const_args);
+            }
+        }
+        $GLOBALS["CONTAINER"] = $container;
+        return $container;
+    }
+
+    public static function registerDBLogger($entity_manager = null, $logger = null)
+    {
+        if(empty($entity_manager) || empty($logger)){
+            throw new \Exception("Tried to register a database logger with missing arguments.");
+        }
+        $pdo = $entityManager->getConnection()->getWrappedConnection();
+        $mySQLHandler = new MySQLHandler($pdo, "errors", [] , Logger::DEBUG);
+        $logger->pushHandler($mySQLHandler);
     }
 
     public static function prePrint($var)
