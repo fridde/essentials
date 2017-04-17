@@ -13,6 +13,12 @@ use MySQLHandler\MySQLHandler;
 class Essentials
 {
 
+/**
+ * Defines $_SERVER['HTTP_HOST'] plus an optional subdirectory as the global constant APP_URL
+ *
+ * @param string $sub_dir An optional subdirectory below HTTP_HOST
+ * @return void
+ */
     public static function setAppUrl($sub_dir = null)
     {
         $base_dir = defined('BASE_DIR') ? BASE_DIR : null;
@@ -30,9 +36,12 @@ class Essentials
     }
 
     /**
-    * [setBaseUrl description]
-    * @param [type] $dir     Should always be __DIR__, called from the index file
-    * @param string $app_dir [description]
+    * Sets a given directory as the global constant BASE_DIR. Use this function in
+    * your index file and give it __DIR__ as argument.
+    *
+    * @param string $dir     The directory to set as BASE_DIR. Should always be __DIR__,
+    *                        called from the index file
+    * @return void
     */
     public static function setBaseDir($dir)
     {
@@ -122,15 +131,15 @@ class Essentials
         return $container->get('Logger');
     }
 
-    public static function registerSharedServices()
+    public static function registerSharedServices(...$services)
     {
-        $args = func_get_args();
-        if(count($args) === 1 && array_filter($args[0], "is_array") == $args[0]){
-            $args = $args[0];
+
+        if(count($services) === 1 && array_filter($services[0], "is_array") == $services[0]){
+            $services = $services[0];
         }
 
         $container = new Container();
-        foreach($args as $service){
+        foreach($services as $service){
             $count = count($service);
             if($count === 2){
                 $container->share($service[0], $service[1]);

@@ -13,12 +13,12 @@
         "yosymfony/toml": "0.3.3",
         "filp/whoops": "2.1.5",
         "tracy/tracy": "2.4.6",
-		"monolog/monolog": "1.22.0",
+        "monolog/monolog": "1.22.0",
         "wazaari/monolog-mysql": "1.0.4",
         "league/container": "2.3"
     },
-	"autoload": {
+    "autoload": {
         "psr-4": { "Fridde\\": "src/" }
-	},
-	"minimum-stability": "dev"
+    },
+    "minimum-stability": "dev"
 }
