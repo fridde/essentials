@@ -3,8 +3,11 @@ namespace Fridde;
 
 use Yosymfony\Toml\Toml;
 use Tracy\Debugger;
-use Monolog\{ErrorHandler, Logger};
-use Monolog\Handler\{StreamHandler, BrowserConsoleHandler};
+use Monolog\Logger;
+use Monolog\ErrorHandler;
+use Monolog\Handler\StreamHandler;
+use Monolog\Handler\BrowserConsoleHandler;
+use Monolog\Handler\ChromePHPHandler;
 use League\Container\Container;
 use League\Container\Argument\RawArgument;
 use MySQLHandler\MySQLHandler;
@@ -124,6 +127,7 @@ class Essentials
         if(empty($container) || !$container->has("Logger")){
             $logger = new Logger('Error handler');
             $logger->pushHandler(new StreamHandler(BASE_DIR.'log/errors.log', Logger::DEBUG));
+            $logger->pushHandler(new ChromePHPHandler());
             //$logger->pushHandler(new BrowserConsoleHandler(Logger::DEBUG));
             ErrorHandler::register($logger);
             return $logger;
@@ -161,7 +165,7 @@ class Essentials
         if(empty($entity_manager) || empty($logger)){
             throw new \Exception("Tried to register a database logger with missing arguments.");
         }
-        $pdo = $entityManager->getConnection()->getWrappedConnection();
+        $pdo = $entity_manager->getConnection()->getWrappedConnection();
         $mySQLHandler = new MySQLHandler($pdo, "errors", [] , Logger::DEBUG);
         $logger->pushHandler($mySQLHandler);
     }
@@ -171,5 +175,12 @@ class Essentials
         echo '<pre>';
         print_r($var);
         echo '</pre>';
+    }
+
+    public static function activateGlobalFunctions(...$function_names)
+    {
+        $functions["_ALL_"] = empty($function_names) ? true : false;
+        $functions += $function_names;
+        include_once("Essentials_functions.php");
     }
 }
