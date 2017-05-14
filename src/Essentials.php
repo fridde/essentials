@@ -4,9 +4,9 @@ namespace Fridde;
 use Yosymfony\Toml\Toml;
 use Tracy\Debugger;
 use Monolog\Logger;
+use Monolog\Formatter\LineFormatter;
 use Monolog\ErrorHandler;
 use Monolog\Handler\StreamHandler;
-use Monolog\Handler\BrowserConsoleHandler;
 use Monolog\Handler\ChromePHPHandler;
 use League\Container\Container;
 use League\Container\Argument\RawArgument;
@@ -16,12 +16,12 @@ use MySQLHandler\MySQLHandler;
 class Essentials
 {
 
-/**
- * Defines $_SERVER['HTTP_HOST'] plus an optional subdirectory as the global constant APP_URL
- *
- * @param string $sub_dir An optional subdirectory below HTTP_HOST
- * @return void
- */
+    /**
+    * Defines $_SERVER['HTTP_HOST'] plus an optional subdirectory as the global constant APP_URL
+    *
+    * @param string $sub_dir An optional subdirectory below HTTP_HOST
+    * @return void
+    */
     public static function setAppUrl($sub_dir = null)
     {
         $base_dir = defined('BASE_DIR') ? BASE_DIR : null;
@@ -57,7 +57,7 @@ class Essentials
         $GLOBALS["BASE_DIR"] = $dir; // for backwards-compatibility
     }
 
-    public static function getSettings($file = 'config/settings.toml', $prefix = "", $globalize = true)
+    public static function getSettings(string $file = 'config/settings.toml', bool $globalize = true)
     {
         $possible_locations[] = defined('APP_URL') ? APP_URL : null;
         $possible_locations[] = defined('BASE_DIR') ? BASE_DIR : null;
@@ -90,9 +90,9 @@ class Essentials
             throw new \Exception('The function getSettings has no implementation for the file extension <'.$ext.'>');
         }
 
-        if($settings && $globalize && !defined($prefix . 'SETTINGS')){
-            define($prefix . 'SETTINGS', $settings);
-            $GLOBALS[$prefix . "SETTINGS"] = $settings; // for backwards-compatibility
+        if($settings && $globalize && !defined('SETTINGS')){
+            define('SETTINGS', $settings);
+            $GLOBALS["SETTINGS"] = $settings; // for backwards-compatibility
         }
 
         return $settings;
@@ -120,24 +120,33 @@ class Essentials
         }
     }
 
-    public static function getLogger()
+    public static function getLogger(string $logger_type = "Info")
     {
         $container = $GLOBALS["CONTAINER"] ?? null;
+        $logger_name = $logger_type . "Logger";
 
-        if(empty($container) || !$container->has("Logger")){
-            $logger = new Logger('Error handler');
-            $logger->pushHandler(new StreamHandler(BASE_DIR.'log/errors.log', Logger::DEBUG));
-            $logger->pushHandler(new ChromePHPHandler());
-            //$logger->pushHandler(new BrowserConsoleHandler(Logger::DEBUG));
-            ErrorHandler::register($logger);
-            return $logger;
+        if(!empty($container) && $container->has($logger_name)){
+            return $container->get($logger_name);
         }
-        return $container->get('Logger');
+        $logger = new Logger($logger_name);
+        if($logger_type == "Info"){
+            $stream = new StreamHandler(BASE_DIR.'log/info.log', Logger::DEBUG);
+            $stream->setFormatter(new LineFormatter());
+            $logger->pushHandler($stream);
+        } elseif($logger_type == "Error"){
+            $stream = new StreamHandler(BASE_DIR.'log/errors.log', Logger::DEBUG);
+            $stream->setFormatter(new LineFormatter());
+            $logger->pushHandler($stream);
+            $logger->pushHandler(new ChromePHPHandler());
+            ErrorHandler::register($logger);
+        } else {
+            throw new \Exception("The logger type <" . $logger_type . "> is not defined.");
+        }
+        return $logger;
     }
 
     public static function registerSharedServices(...$services)
     {
-
         if(count($services) === 1 && array_filter($services[0], "is_array") == $services[0]){
             $services = $services[0];
         }
@@ -153,18 +162,22 @@ class Essentials
                     $a = new RawArgument($a);
                 });
                 $container->share($service[0], $service[1])
-                    ->withArguments($const_args);
+                ->withArguments($const_args);
             }
         }
         $GLOBALS["CONTAINER"] = $container;
         return $container;
     }
 
-    public static function registerDBLogger($entity_manager = null, $logger = null)
+    /**
+     * [registerDBLogger description]
+     * @param  \Doctrine\ORM\EntityManager $entity_manager The entity manager containing
+     *                                                     a valid connection setup
+     * @param  \Monolog\Logger $logger A logger instance
+     * @return void
+     */
+    public static function registerDBLogger($entity_manager, $logger)
     {
-        if(empty($entity_manager) || empty($logger)){
-            throw new \Exception("Tried to register a database logger with missing arguments.");
-        }
         $pdo = $entity_manager->getConnection()->getWrappedConnection();
         $mySQLHandler = new MySQLHandler($pdo, "errors", [] , Logger::DEBUG);
         $logger->pushHandler($mySQLHandler);
