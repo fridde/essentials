@@ -15,7 +15,8 @@
         "tracy/tracy": "2.4.6",
         "monolog/monolog": "1.22.0",
         "wazaari/monolog-mysql": "1.0.4",
-        "league/container": "2.3"
+        "league/container": "2.3",
+        "symfony/yaml": "3.3.0"
     },
     "autoload": {
         "psr-4": { "Fridde\\": "src/" }

@@ -2,6 +2,7 @@
 namespace Fridde;
 
 use Yosymfony\Toml\Toml;
+use Symfony\Component\Yaml\Yaml;
 use Tracy\Debugger;
 use Monolog\Logger;
 use Monolog\Formatter\LineFormatter;
@@ -57,7 +58,7 @@ class Essentials
         $GLOBALS["BASE_DIR"] = $dir; // for backwards-compatibility
     }
 
-    public static function getSettings(string $file = 'config/settings.toml', bool $globalize = true)
+    public static function getSettings(string $file = 'config/settings.yml', bool $globalize = true)
     {
         $possible_locations[] = defined('APP_URL') ? APP_URL : null;
         $possible_locations[] = defined('BASE_DIR') ? BASE_DIR : null;
@@ -77,7 +78,8 @@ class Essentials
         $ext = strtolower(pathinfo($path, PATHINFO_EXTENSION));
         if ($ext == 'toml') {
             $settings = Toml::Parse($path);
-
+        } elseif ($ext === 'yml') {
+          $settings =  Yaml::parse(file_get_contents($path));
         } elseif ($ext == 'json') {
             $json_string = file_get_contents($path);
             if (!$json_string) {
@@ -98,11 +100,14 @@ class Essentials
         return $settings;
     }
 
-    public static function getRoutes($file = 'config/routes.toml')
+    public static function getRoutes($file = 'config/routes.yml')
     {
-        $routes = self::getSettings($file, "", false);
+        $routes = self::getSettings($file, false);
         $routes = array_filter($routes["routes"]);
-        return $routes;
+        $routes = array_walk($routes, function(&$v, $i){
+            $v[] = $i;
+        });
+        return array_values($routes);
     }
 
     public static function activateDebug($options = [])
