@@ -1,8 +1,7 @@
 <?php
 namespace Fridde;
 
-use Yosymfony\Toml\Toml;
-use Symfony\Component\Yaml\Yaml;
+
 use Tracy\Debugger;
 use Monolog\Logger;
 use Monolog\Formatter\LineFormatter;
@@ -58,53 +57,11 @@ class Essentials
         $GLOBALS["BASE_DIR"] = $dir; // for backwards-compatibility
     }
 
-    public static function getSettings(string $file = 'config/settings.yml', bool $globalize = true)
-    {
-        $possible_locations[] = defined('APP_URL') ? APP_URL : null;
-        $possible_locations[] = defined('BASE_DIR') ? BASE_DIR : null;
-        $possible_locations[] = $_SERVER['DOCUMENT_ROOT'];
-        $possible_locations[] = getcwd();
-
-        $settings = false;
-        foreach($possible_locations as $dir){
-            $path = realpath($dir . "/" . $file);
-            if(is_readable($path)){
-                break;
-            }
-        }
-        if (empty($path) || !is_readable($path)) {
-            throw new \Exception('The file '.$path." is not readable or doesn't exist.");
-        }
-        $ext = strtolower(pathinfo($path, PATHINFO_EXTENSION));
-        if ($ext == 'toml') {
-            $settings = Toml::Parse($path);
-        } elseif ($ext === 'yml') {
-          $settings =  Yaml::parse(file_get_contents($path));
-        } elseif ($ext == 'json') {
-            $json_string = file_get_contents($path);
-            if (!$json_string) {
-                throw new \Exception("The file $path could not be read or found!");
-            }
-            $settings = json_decode($json_string, true);
-        } elseif ($ext == 'ini') {
-            $settings = parse_ini_file($path, true);
-        } else {
-            throw new \Exception('The function getSettings has no implementation for the file extension <'.$ext.'>');
-        }
-
-        if($settings && $globalize && !defined('SETTINGS')){
-            define('SETTINGS', $settings);
-            $GLOBALS["SETTINGS"] = $settings; // for backwards-compatibility
-        }
-
-        return $settings;
-    }
-
     public static function getRoutes($file = 'config/routes.yml')
     {
-        $routes = self::getSettings($file, false);
+        $routes = Settings::getArrayFromFile($file);
         $routes = array_filter($routes["routes"]);
-        $routes = array_walk($routes, function(&$v, $i){
+        array_walk($routes, function(&$v, $i){
             $v[] = $i;
         });
         return array_values($routes);
