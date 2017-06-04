@@ -7,7 +7,7 @@ use Symfony\Component\Yaml\Yaml;
 
 class Settings
 {
-    public static function setSettings(array $files = ['settings', 'nav'], string $folder = '/config', $ext = 'yaml')
+    public static function setSettings(array $files = ['settings', 'nav'], string $folder = 'config', $ext = 'yml')
     {
         $settings = [];
         foreach ($files as $file) {
@@ -47,7 +47,7 @@ class Settings
             }
         }
         if (empty($path)) {
-            throw new \Exception("The file $path is not readable or doesn't exist.");
+            throw new \Exception("The file $file is not readable or doesn't exist.");
         }
 
         return self::getArray($path);
@@ -76,17 +76,17 @@ class Settings
         return self::$full_method_name($path);
     }
 
-    private function getArrayFromTomlFile($path)
+    private static function getArrayFromTomlFile($path)
     {
         return Toml::Parse($path);
     }
 
-    private function getArrayFromYamlFile($path)
+    private static function getArrayFromYamlFile($path)
     {
         return Yaml::parse(file_get_contents($path));
     }
 
-    private function getArrayFromJsonFile($path)
+    private static function getArrayFromJsonFile($path)
     {
         $json_string = file_get_contents($path);
         if (!$json_string) {
@@ -96,7 +96,7 @@ class Settings
         return json_decode($json_string, true);
     }
 
-    private function getArrayFromIniFile($path)
+    private static function getArrayFromIniFile($path)
     {
         return parse_ini_file($path, true);
     }
