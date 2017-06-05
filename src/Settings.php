@@ -40,7 +40,7 @@ class Settings
     {
         $possible_locations = self::getPossibleLocations();
         foreach ($possible_locations as $dir) {
-            $pot_path = realpath($dir.$file);
+            $pot_path = realpath($dir . $file);
             if (is_readable($pot_path)) {
                 $path = $pot_path;
                 break;
