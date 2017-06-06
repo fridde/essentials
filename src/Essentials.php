@@ -49,7 +49,7 @@ class Essentials
     public static function setBaseDir($dir)
     {
         if(substr($dir, -1 , 1) !== "/"){
-            $dir .= '\\';
+            $dir .= DIRECTORY_SEPARATOR;
         }
         if(!defined('BASE_DIR')){
             define('BASE_DIR', $dir);
