@@ -48,9 +48,9 @@ class Essentials
     */
     public static function setBaseDir($dir)
     {
-        if(substr($dir, -1 , 1) !== "/"){
-            $dir .= DIRECTORY_SEPARATOR;
-        }
+        $dir = rtrim($dir, '/\\');
+        $dir .= DIRECTORY_SEPARATOR;
+
         if(!defined('BASE_DIR')){
             define('BASE_DIR', $dir);
         }
@@ -70,6 +70,7 @@ class Essentials
     public static function activateDebug($options = [])
     {
         $GLOBALS['debug'] = true;
+        define('DEBUG', true);
 
         error_reporting(E_ALL);
         ini_set('display_errors', '1');
