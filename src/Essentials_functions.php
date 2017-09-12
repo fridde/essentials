@@ -28,7 +28,7 @@ if($all || in_array("getRequest", $functions)){
             
         if($defined_CT == "json"){
             $string = file_get_contents("php://input");
-            json_decode($string);
+            json_decode($string, true);
             $is_valid = json_last_error() == JSON_ERROR_NONE;
             if(strlen($string) > 0 && $is_valid){
                 return json_decode($string, true);
