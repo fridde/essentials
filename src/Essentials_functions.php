@@ -11,7 +11,7 @@ if($all || in_array("getRequest", $functions)){
     function getRequest($content_type = null)
     {
         $possible_content_types = ["json", "urlencoded"];
-        if(empty($data_type) && function_exists("getallheaders")){
+        if(empty($content_type) && function_exists("getallheaders")){
             $req_headers = getallheaders();
             $content_type = $req_headers['Content-Type'] ?? "";
         }
