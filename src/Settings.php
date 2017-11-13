@@ -11,13 +11,13 @@ class Settings
     {
         $settings = [];
         foreach ($files as $file) {
-            $path = empty($folder) ? '' : $folder . '/';
+            $path = empty($folder) ? '' : $folder.'/';
             $path .= $file;
-            $path .= empty($ext) ? '' : '.' . $ext;
+            $path .= empty($ext) ? '' : '.'.$ext;
             $settings = $settings + self::getArrayFromFile($path);
         }
 
-        if(defined('SETTINGS')){
+        if (defined('SETTINGS')) {
             throw new \Exception("Can't redefine constant SETTINGS");
         }
         define('SETTINGS', $settings);
@@ -40,7 +40,7 @@ class Settings
     {
         $possible_locations = self::getPossibleLocations();
         foreach ($possible_locations as $dir) {
-            $pot_path = realpath($dir . $file);
+            $pot_path = realpath($dir.$file);
             if (is_readable($pot_path)) {
                 $path = $pot_path;
                 break;
