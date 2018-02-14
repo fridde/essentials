@@ -9,13 +9,15 @@
         }
     ],
     "require": {
-        "php": ">=7.0.0",        
-        "filp/whoops": "2.1.5",
-        "tracy/tracy": "2.4.6",
+        "php": ">=7.0.0",
         "monolog/monolog": "1.22.0",
         "wazaari/monolog-mysql": "1.0.4",
         "league/container": "2.3",
         "symfony/yaml": "4.0.4"
+    },
+    "require-dev": {
+        "filp/whoops": "2.1.5",
+        "tracy/tracy": "2.4.6"
     },
     "autoload": {
         "psr-4": { "Fridde\\": "src/" }
