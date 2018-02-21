@@ -34,7 +34,8 @@ class Essentials
             $sub_dir .= "/";
         }
         if (!defined('APP_URL')) {
-            define('APP_URL', $_SERVER['HTTP_HOST']."/".$sub_dir);
+            $server_host = $_SERVER['HTTP_HOST'] ?? '';
+            define('APP_URL', $server_host . "/".$sub_dir);
         }
         $GLOBALS["APP_URL"] = APP_URL; // for backwards-compatibility
     }
