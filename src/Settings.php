@@ -7,15 +7,16 @@ use Symfony\Component\Yaml\Yaml;
 
 class Settings
 {
-    public static function setSettings(array $files = ['settings', 'nav'], string $folder = 'config', $ext = 'yml')
+    public static function setSettings(array $files = ['settings_default', 'settings_local', 'nav'], string $folder = 'config', $ext = 'yml')
     {
         $settings = [];
         foreach ($files as $file) {
             $path = empty($folder) ? '' : $folder.'/';
             $path .= $file;
             $path .= empty($ext) ? '' : '.'.$ext;
-            $settings = $settings + self::getArrayFromFile($path);
+            $settings[] = self::getArrayFromFile($path);
         }
+        $settings = array_replace_recursive(...$settings);
 
         if (defined('SETTINGS')) {
             throw new \Exception("Can't redefine constant SETTINGS");
@@ -83,7 +84,7 @@ class Settings
 
     private static function getArrayFromYamlFile($path)
     {
-        return Yaml::parse(file_get_contents($path));
+        return Yaml::parseFile($path);
     }
 
     private static function getArrayFromJsonFile($path)
