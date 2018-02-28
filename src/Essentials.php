@@ -29,15 +29,15 @@ class Essentials
         if (!empty($base_dir) && empty($sub_dir)) {
             $sub_dir = basename($base_dir);
         }
-        $sub_dir = $sub_dir ?? "";
-        if (substr($sub_dir, -1, 1) !== "/") {
-            $sub_dir .= "/";
+        $sub_dir = $sub_dir ?? '';
+        if (substr($sub_dir, -1, 1) !== '/') {
+            $sub_dir .= '/';
         }
         if (!defined('APP_URL')) {
             $server_host = $_SERVER['HTTP_HOST'] ?? '';
-            define('APP_URL', $server_host . "/".$sub_dir);
+            define('APP_URL', $server_host . '/'.$sub_dir);
         }
-        $GLOBALS["APP_URL"] = APP_URL; // for backwards-compatibility
+        $GLOBALS['APP_URL'] = APP_URL; // for backwards-compatibility
     }
 
     /**
@@ -56,13 +56,13 @@ class Essentials
         if (!defined('BASE_DIR')) {
             define('BASE_DIR', $dir);
         }
-        $GLOBALS["BASE_DIR"] = $dir; // for backwards-compatibility
+        $GLOBALS['BASE_DIR'] = $dir; // for backwards-compatibility
     }
 
     public static function getRoutes($file = 'config/routes.yml')
     {
         $routes = Settings::getArrayFromFile($file);
-        $routes = array_filter($routes["routes"]);
+        $routes = array_filter($routes['routes']);
         array_walk(
             $routes,
             function (&$v, $i) {
@@ -81,7 +81,7 @@ class Essentials
         error_reporting(E_ALL);
         ini_set('display_errors', '1');
 
-        if (!in_array("no_tracy", $options)) {
+        if (!in_array('no_tracy', $options)) {
             Debugger::enable();
             Debugger::$strictMode = true;
             Debugger::$logSeverity = E_NOTICE | E_WARNING;
@@ -89,9 +89,9 @@ class Essentials
         }
     }
 
-    public static function getLogger(string $logger_name = "Logger")
+    public static function getLogger(string $logger_name = 'Logger')
     {
-        $container = $GLOBALS["CONTAINER"] ?? null;
+        $container = $GLOBALS['CONTAINER'] ?? null;
 
         if (!empty($container) && $container->has($logger_name)) {
             return $container->get($logger_name);
@@ -109,7 +109,7 @@ class Essentials
 
     public static function registerSharedServices(...$services)
     {
-        if (count($services) === 1 && array_filter($services[0], "is_array") == $services[0]) {
+        if (count($services) === 1 && array_filter($services[0], 'is_array') == $services[0]) {
             $services = $services[0];
         }
 
@@ -130,7 +130,7 @@ class Essentials
                     ->withArguments($const_args);
             }
         }
-        $GLOBALS["CONTAINER"] = $container;
+        $GLOBALS['CONTAINER'] = $container;
 
         return $container;
     }
@@ -145,7 +145,7 @@ class Essentials
     public static function registerDBLogger($entity_manager, $logger)
     {
         $pdo = $entity_manager->getConnection()->getWrappedConnection();
-        $mySQLHandler = new MySQLHandler($pdo, "log", ['source'], Logger::DEBUG);
+        $mySQLHandler = new MySQLHandler($pdo, 'log', ['source'], Logger::DEBUG);
         $logger->pushHandler($mySQLHandler);
     }
 
@@ -156,10 +156,4 @@ class Essentials
         echo '</pre>';
     }
 
-    public static function activateGlobalFunctions(...$function_names)
-    {
-        $functions["_ALL_"] = empty($function_names) ? true : false;
-        $functions += $function_names;
-        include_once("Essentials_functions.php");
-    }
 }
