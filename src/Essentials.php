@@ -20,24 +20,28 @@ class Essentials
     /**
      * Defines $_SERVER['HTTP_HOST'] plus an optional subdirectory as the global constant APP_URL
      *
-     * @param string $sub_dir An optional subdirectory below HTTP_HOST
+     * @param string $dir An optional subdirectory below HTTP_HOST
      * @return void
      */
-    public static function setAppUrl($sub_dir = null)
+    public static function setAppUrl($dir = null)
     {
-        $base_dir = defined('BASE_DIR') ? BASE_DIR : null;
-        if (!empty($base_dir) && empty($sub_dir)) {
-            $sub_dir = basename($base_dir);
+        $doc_root = $_SERVER['DOCUMENT_ROOT'] ?? null;
+        if (empty($doc_root) || defined('APP_URL')) {
+            return;
         }
-        $sub_dir = $sub_dir ?? '';
-        if (substr($sub_dir, -1, 1) !== '/') {
-            $sub_dir .= '/';
+
+        if (empty($dir) && !defined('BASE_DIR')) {
+            throw new \Exception('No base directory was specified.');
         }
-        if (!defined('APP_URL')) {
-            $server_host = $_SERVER['HTTP_HOST'] ?? '';
-            define('APP_URL', $server_host . '/'.$sub_dir);
+
+        $base_dir = self::toUnixPath($dir ?? BASE_DIR);
+        $doc_root = self::toUnixPath($doc_root);
+        $app_dir = '';
+        if (0 === strpos($base_dir, $doc_root)) {
+            $app_dir = substr($base_dir, strlen($doc_root));
         }
-        $GLOBALS['APP_URL'] = APP_URL; // for backwards-compatibility
+        $server_host = $_SERVER['HTTP_HOST'] ?? '';  // the empty string is there to be able to run CLI-apps
+        define('APP_URL', '//' . $server_host . $app_dir . '/');
     }
 
     /**
@@ -50,13 +54,12 @@ class Essentials
      */
     public static function setBaseDir($dir)
     {
-        $dir = rtrim($dir, '/\\');
-        $dir .= DIRECTORY_SEPARATOR;
-
-        if (!defined('BASE_DIR')) {
-            define('BASE_DIR', $dir);
+        if (defined('BASE_DIR')) {
+            return;
         }
-        $GLOBALS['BASE_DIR'] = $dir; // for backwards-compatibility
+
+        $dir = rtrim($dir, '/\\').DIRECTORY_SEPARATOR;
+        define('BASE_DIR', $dir);
     }
 
     public static function getRoutes($file = 'config/routes.yml')
@@ -97,8 +100,8 @@ class Essentials
             return $container->get($logger_name);
         }
         $logger = new Logger($logger_name);
-        $file_name = 'log_' . date('Y-m-d') . '.log';
-        $stream = new StreamHandler(BASE_DIR.'log/' . $file_name, Logger::DEBUG);
+        $file_name = 'log_'.date('Y-m-d').'.log';
+        $stream = new StreamHandler(BASE_DIR.'log/'.$file_name, Logger::DEBUG);
         $stream->setFormatter(new LineFormatter());
         $logger->pushHandler($stream);
         $logger->pushHandler(new ChromePHPHandler());
@@ -147,6 +150,11 @@ class Essentials
         $pdo = $entity_manager->getConnection()->getWrappedConnection();
         $mySQLHandler = new MySQLHandler($pdo, 'log', ['source'], Logger::DEBUG);
         $logger->pushHandler($mySQLHandler);
+    }
+
+    public static function toUnixPath(string $path)
+    {
+        return str_replace('\\', '/', $path);
     }
 
     public static function prePrint($var)
