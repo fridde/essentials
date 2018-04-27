@@ -62,7 +62,7 @@ class Essentials
         define('BASE_DIR', $dir);
     }
 
-    public static function getRoutes($file = 'config/routes.yml')
+    public static function getRoutes(string $file = 'config/routes.yml')
     {
         $routes = Settings::getArrayFromFile($file);
         $routes = array_filter($routes['routes']);
@@ -76,7 +76,7 @@ class Essentials
         return array_values($routes);
     }
 
-    public static function activateDebug($options = [])
+    public static function activateDebug(array $options = [])
     {
         $GLOBALS['debug'] = true;
         define('DEBUG', true);
@@ -84,7 +84,7 @@ class Essentials
         error_reporting(E_ALL);
         ini_set('display_errors', '1');
 
-        if (!in_array('no_tracy', $options)) {
+        if (!in_array('no_tracy', $options, true)) {
             Debugger::enable();
             Debugger::$strictMode = true;
             Debugger::$logSeverity = E_NOTICE | E_WARNING;

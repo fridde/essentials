@@ -2,7 +2,6 @@
 
 namespace Fridde;
 
-use Yosymfony\Toml\Toml;
 use Symfony\Component\Yaml\Yaml;
 
 class Settings
@@ -19,10 +18,10 @@ class Settings
         $settings = array_replace_recursive(...$settings);
 
         if (defined('SETTINGS')) {
-            throw new \Exception("Can't redefine constant SETTINGS");
+            throw new \Exception('Can\'t redefine constant SETTINGS');
         }
         define('SETTINGS', $settings);
-        $GLOBALS["SETTINGS"] = $settings; // for backwards-compatibility
+        $GLOBALS['SETTINGS'] = $settings; // for backwards-compatibility
 
         return $settings;
     }
@@ -58,28 +57,20 @@ class Settings
     {
         $ext = strtolower(pathinfo($path, PATHINFO_EXTENSION));
         switch ($ext) {
-            case "toml":
-                $method = "Toml";
+            case 'yml':
+            case 'yaml':
+                $method = 'Yaml';
                 break;
-            case "yml":
-            case "yaml":
-                $method = "Yaml";
+            case 'json':
+                $method = 'Json';
                 break;
-            case "json":
-                $method = "Json";
-                break;
-            case "ini":
-                $method = "Ini";
+            case 'ini':
+                $method = 'Ini';
                 break;
         }
-        $full_method_name = "getArrayFrom".$method."File";
+        $full_method_name = 'getArrayFrom'.$method.'File';
 
         return self::$full_method_name($path);
-    }
-
-    private static function getArrayFromTomlFile($path)
-    {
-        return Toml::Parse($path);
     }
 
     private static function getArrayFromYamlFile($path)
