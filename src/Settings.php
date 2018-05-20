@@ -28,7 +28,6 @@ class Settings
 
     private static function getPossibleLocations()
     {
-        $loc[] = defined('APP_URL') ? APP_URL : null;
         $loc[] = defined('BASE_DIR') ? BASE_DIR : null;
         $loc[] = $_SERVER['DOCUMENT_ROOT'];
         $loc[] = getcwd();
@@ -40,7 +39,7 @@ class Settings
     {
         $possible_locations = self::getPossibleLocations();
         foreach ($possible_locations as $dir) {
-            $pot_path = realpath($dir.$file);
+            $pot_path = $dir . '/' . $file;
             if (is_readable($pot_path)) {
                 $path = $pot_path;
                 break;
@@ -67,6 +66,8 @@ class Settings
             case 'ini':
                 $method = 'Ini';
                 break;
+            default:
+                $method = '';
         }
         $full_method_name = 'getArrayFrom'.$method.'File';
 

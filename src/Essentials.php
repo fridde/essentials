@@ -58,7 +58,7 @@ class Essentials
             return;
         }
 
-        $dir = rtrim($dir, '/\\').DIRECTORY_SEPARATOR;
+        $dir = rtrim($dir, '/\\');
         define('BASE_DIR', $dir);
     }
 
@@ -101,7 +101,7 @@ class Essentials
         }
         $logger = new Logger($logger_name);
         $file_name = 'log_'.date('Y-m-d').'.log';
-        $stream = new StreamHandler(BASE_DIR.'log/'.$file_name, Logger::DEBUG);
+        $stream = new StreamHandler(BASE_DIR.'/log/'.$file_name, Logger::DEBUG);
         $stream->setFormatter(new LineFormatter());
         $logger->pushHandler($stream);
         $logger->pushHandler(new ChromePHPHandler());
