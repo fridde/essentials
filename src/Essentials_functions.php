@@ -4,14 +4,14 @@
 */
 
 $functions = $functions ?? [];
-$all = $functions["_ALL_"] ?? false;
+$all = $functions['_ALL_'] ?? false;
 
-if($all || in_array("getRequest", $functions)){
+if($all || in_array('getRequest', $functions)){
 
     function getRequest($content_type = null)
     {
-        $possible_content_types = ["json", "urlencoded"];
-        if(empty($content_type) && function_exists("getallheaders")){
+        $possible_content_types = ['json', 'urlencoded'];
+        if(empty($content_type) && function_exists('getallheaders')){
             $req_headers = getallheaders();
             $content_type = $req_headers['Content-Type'] ?? "";
         }
@@ -19,15 +19,15 @@ if($all || in_array("getRequest", $functions)){
             return strpos($content_type, $ct) !== false;
         });
         if(count($content_types) > 1){
-            throw new \Exception("This was a weird content-type: " . $content_type);
+            throw new \Exception('This was a weird content-type: ' . $content_type);
         }
         if(empty($content_types)){
             return $_REQUEST;
         }
         $defined_CT = array_shift($content_types);
             
-        if($defined_CT == "json"){
-            $string = file_get_contents("php://input");
+        if($defined_CT == 'json'){
+            $string = file_get_contents('php://input');
             json_decode($string, true);
             $is_valid = json_last_error() == JSON_ERROR_NONE;
             if(strlen($string) > 0 && $is_valid){
@@ -35,7 +35,7 @@ if($all || in_array("getRequest", $functions)){
             } else {
                 return null;
             }
-        } elseif($defined_CT == "urlencoded"){
+        } elseif($defined_CT == 'urlencoded'){
             return $_REQUEST;
         }
     }
