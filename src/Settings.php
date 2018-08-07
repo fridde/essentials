@@ -6,6 +6,7 @@ use Symfony\Component\Yaml\Yaml;
 
 class Settings
 {
+    
     public static function setSettings(array $files = ['settings_default', 'nav'], string $folder = 'config', $ext = 'yml')
     {
         $settings = [];
