@@ -100,14 +100,15 @@ class Essentials
             if(ENVIRONMENT === self::ENV_PROD){
                 define('DEBUG', false);
                 return;
-            } elseif(in_array(ENVIRONMENT, [self::ENV_DEV, self::ENV_TEST])){
+            } elseif(in_array(ENVIRONMENT, [self::ENV_DEV, self::ENV_TEST], true)){
                 define('DEBUG', true);
             } else {
                 throw new \Exception('The environment variable '. ENVIRONMENT . ' could not be recognized.');
             }
+        } else {
+            define('DEBUG', true);
         }
 
-        define('DEBUG', true);
         error_reporting(E_ALL);
         ini_set('display_errors', '1');
 
