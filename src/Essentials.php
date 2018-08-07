@@ -94,11 +94,20 @@ class Essentials
         return array_values($routes);
     }
 
-    public static function activateDebug(array $options = [])
+    public static function activateDebugIfNecessary(array $options = [])
     {
-        $GLOBALS['debug'] = true;
-        define('DEBUG', true);
+        if(defined('ENVIRONMENT')){
+            if(ENVIRONMENT === self::ENV_PROD){
+                define('DEBUG', false);
+                return;
+            } elseif(in_array(ENVIRONMENT, [self::ENV_DEV, self::ENV_TEST])){
+                define('DEBUG', true);
+            } else {
+                throw new \Exception('The environment variable '. ENVIRONMENT . ' could not be recognized.');
+            }
+        }
 
+        define('DEBUG', true);
         error_reporting(E_ALL);
         ini_set('display_errors', '1');
 
