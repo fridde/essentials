@@ -16,6 +16,9 @@ use MySQLHandler\MySQLHandler;
 
 class Essentials
 {
+    public const ENV_DEV = 'dev';
+    public const ENV_TEST = 'test';
+    public const ENV_PROD = 'prod';
 
     /**
      * Defines $_SERVER['HTTP_HOST'] plus an optional subdirectory as the global constant APP_URL
@@ -60,6 +63,21 @@ class Essentials
 
         $dir = rtrim($dir, '/\\');
         define('BASE_DIR', $dir);
+    }
+
+    public static function setEnvironment()
+    {
+        $pattern = BASE_DIR . '/.env_*';
+        $files = glob($pattern);
+
+        if(!empty($files)){
+            $env = substr($files[0], strlen($pattern) - 1);
+        } elseif(false !== strpos($_SERVER['HTTP_HOST'], 'localhost')){
+            $env = self::ENV_DEV;
+        } else {
+            $env = self::ENV_DEV;
+        }
+        define('ENVIRONMENT', $env);
     }
 
     public static function getRoutes(string $file = 'config/routes.yml')
