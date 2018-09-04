@@ -177,7 +177,7 @@ class Essentials
     public static function registerDBLogger($entity_manager, $logger)
     {
         $pdo = $entity_manager->getConnection()->getWrappedConnection();
-        $mySQLHandler = new MySQLHandler($pdo, 'log', ['source'], Logger::DEBUG);
+        $mySQLHandler = new MySQLHandler($pdo, 'log', ['source', 'datetime'], Logger::DEBUG);
         $logger->pushHandler($mySQLHandler);
     }
 
