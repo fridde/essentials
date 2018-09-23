@@ -2,26 +2,40 @@
 
 namespace Fridde;
 
+use Doctrine\Common\Cache\Cache;
 use Symfony\Component\Yaml\Yaml;
 
 class Settings
 {
-    
-    public static function setSettings(array $files = ['settings_default', 'nav'], string $folder = 'config', $ext = 'yml')
+
+    public static function setSettings(array $options = [])
     {
+        $files = $options['files'] ?? ['settings_default', 'nav'];
+        $folder = $options['folder'] ?? 'config';
+        $ext = $options['ext'] ?? 'yml';
+        /* @var Cache $cache */
+        $cache = $options['cache'] ?? null;
+
         $settings = [];
 
-        if(defined('ENVIRONMENT')){
-            $files[] = 'settings_' . ENVIRONMENT;
+        if (defined('ENVIRONMENT')) {
+            $files[] = 'settings_'.ENVIRONMENT;
         }
 
-        foreach ($files as $file) {
-            $path = empty($folder) ? '' : $folder.'/';
-            $path .= $file;
-            $path .= empty($ext) ? '' : '.'.$ext;
-            $settings[] = self::getArrayFromFile($path);
+        if (!empty($cache) && $cache->contains('settings')) {
+            $settings = $cache->fetch('settings');
+        } else {
+            foreach ($files as $file) {
+                $path = empty($folder) ? '' : $folder.'/';
+                $path .= $file;
+                $path .= empty($ext) ? '' : '.'.$ext;
+                $settings[] = self::getArrayFromFile($path);
+            }
+            $settings = array_replace_recursive(...$settings);
+            if (!empty($cache)) {
+                $cache->save('settings', $settings);
+            }
         }
-        $settings = array_replace_recursive(...$settings);
 
         if (defined('SETTINGS')) {
             throw new \Exception('Can\'t redefine constant SETTINGS');
@@ -31,7 +45,6 @@ class Settings
 
         return $settings;
     }
-
 
 
     private static function getPossibleLocations()
@@ -47,7 +60,7 @@ class Settings
     {
         $possible_locations = self::getPossibleLocations();
         foreach ($possible_locations as $dir) {
-            $pot_path = $dir . '/' . $file;
+            $pot_path = $dir.'/'.$file;
             if (is_readable($pot_path)) {
                 $path = $pot_path;
                 break;
