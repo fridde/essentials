@@ -83,15 +83,8 @@ class Essentials
     public static function getRoutes(string $file = 'config/routes.yml')
     {
         $routes = Settings::getArrayFromFile($file);
-        $routes = array_filter($routes['routes']);
-        array_walk(
-            $routes,
-            function (&$v, $i) {
-                $v[] = $i;
-            }
-        );
 
-        return array_values($routes);
+        return array_filter($routes['routes']);
     }
 
     public static function activateDebugIfNecessary(array $options = [])
