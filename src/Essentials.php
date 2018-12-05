@@ -39,12 +39,24 @@ class Essentials
 
         $base_dir = self::toUnixPath($dir ?? BASE_DIR);
         $doc_root = self::toUnixPath($doc_root);
-        $app_dir = '';
+
         if (0 === strpos($base_dir, $doc_root)) {
             $app_dir = substr($base_dir, strlen($doc_root));
         }
-        $server_host = $_SERVER['HTTP_HOST'] ?? '';  // the empty string is there to be able to run CLI-apps
-        define('APP_URL', '//' . $server_host . $app_dir . '/');
+        $is_cli = empty($_SERVER['HTTP_HOST']);
+
+        $APP_URL = $is_cli ? '' : 'http';
+        $APP_URL .= $is_cli || empty($_SERVER['HTTPS']) ? '' : 's'; //http or https
+        $APP_URL .= $is_cli ? '' : ':';
+        $APP_URL .= '//';
+        $APP_URL .= $is_cli ? '' : $_SERVER['HTTP_HOST'];
+
+        $start_from = 0 === strpos($base_dir, $doc_root) ? strlen($doc_root) : 0;
+        $APP_URL .= substr($base_dir, $start_from); // remove the common strings
+
+        $APP_URL .= '/';
+
+        define('APP_URL', $APP_UR);
     }
 
     /**
