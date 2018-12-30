@@ -40,9 +40,6 @@ class Essentials
         $base_dir = self::toUnixPath($dir ?? BASE_DIR);
         $doc_root = self::toUnixPath($doc_root);
 
-        if (0 === strpos($base_dir, $doc_root)) {
-            $app_dir = substr($base_dir, strlen($doc_root));
-        }
         $is_cli = empty($_SERVER['HTTP_HOST']);
 
         $APP_URL = $is_cli ? '' : 'http';
@@ -56,7 +53,7 @@ class Essentials
 
         $APP_URL .= '/';
 
-        define('APP_URL', $APP_UR);
+        define('APP_URL', $APP_URL);
     }
 
     /**
