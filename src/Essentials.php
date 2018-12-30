@@ -2,7 +2,6 @@
 
 namespace Fridde;
 
-
 use Tracy\Debugger;
 use Monolog\Logger;
 use Monolog\Formatter\LineFormatter;
@@ -26,7 +25,7 @@ class Essentials
      * @param string $dir An optional subdirectory below HTTP_HOST
      * @return void
      */
-    public static function setAppUrl($dir = null)
+    public static function setAppUrl(string $dir = null): void
     {
         $doc_root = $_SERVER['DOCUMENT_ROOT'] ?? null;
         if (empty($doc_root) || defined('APP_URL')) {
@@ -64,7 +63,7 @@ class Essentials
      *                        called from the index file
      * @return void
      */
-    public static function setBaseDir($dir)
+    public static function setBaseDir(string $dir): void
     {
         if (defined('BASE_DIR')) {
             return;
@@ -74,7 +73,7 @@ class Essentials
         define('BASE_DIR', $dir);
     }
 
-    public static function setEnvironment()
+    public static function setEnvironment(): void
     {
         $pattern = BASE_DIR . '/.env_*';
         $files = glob($pattern);
@@ -89,7 +88,7 @@ class Essentials
         define('ENVIRONMENT', $env);
     }
 
-    public static function getRoutes(string $file = 'config/routes.yml')
+    public static function getRoutes(string $file = 'config/routes.yml'): array
     {
         $routes = Settings::getArrayFromFile($file);
 
@@ -141,7 +140,7 @@ class Essentials
         return $logger;
     }
 
-    public static function registerSharedServices(...$services)
+    public static function registerSharedServices(...$services): Container
     {
         if (count($services) === 1 && array_filter($services[0], 'is_array') == $services[0]) {
             $services = $services[0];
@@ -176,19 +175,19 @@ class Essentials
      * @param  \Monolog\Logger $logger A logger instance
      * @return void
      */
-    public static function registerDBLogger($entity_manager, $logger)
+    public static function registerDBLogger($entity_manager, $logger): void
     {
         $pdo = $entity_manager->getConnection()->getWrappedConnection();
         $mySQLHandler = new MySQLHandler($pdo, 'log', ['source', 'datetime'], Logger::DEBUG);
         $logger->pushHandler($mySQLHandler);
     }
 
-    public static function toUnixPath(string $path)
+    public static function toUnixPath(string $path): string
     {
         return str_replace('\\', '/', $path);
     }
 
-    public static function prePrint($var)
+    public static function prePrint($var): void
     {
         echo '<pre>';
         print_r($var);
