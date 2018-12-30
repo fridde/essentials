@@ -88,6 +88,11 @@ class Essentials
         define('ENVIRONMENT', $env);
     }
 
+    /**
+     * @param string $file
+     * @return array
+     * @throws \Exception
+     */
     public static function getRoutes(string $file = 'config/routes.yml'): array
     {
         $routes = Settings::getArrayFromFile($file);
@@ -95,12 +100,16 @@ class Essentials
         return array_filter($routes['routes']);
     }
 
-    public static function activateDebugIfNecessary(array $options = [])
+    /**
+     * @param array $options
+     * @throws \Exception
+     */
+    public static function activateDebugIfNecessary(array $options = []): void
     {
         $environments = [self::ENV_DEV, self::ENV_TEST, self::ENV_PROD];
 
         if(defined('ENVIRONMENT')){
-            if(!in_array(ENVIRONMENT, $environments)){
+            if(!in_array(ENVIRONMENT, $environments, true)){
                 throw new \Exception('The environment variable '. ENVIRONMENT . ' could not be recognized.');
             }
             if(ENVIRONMENT === self::ENV_PROD){
@@ -122,7 +131,12 @@ class Essentials
         }
     }
 
-    public static function getLogger(string $logger_name = 'Logger')
+    /**
+     * @param string $logger_name
+     * @return Logger
+     * @throws \Exception
+     */
+    public static function getLogger(string $logger_name = 'Logger'): Logger
     {
         $container = $GLOBALS['CONTAINER'] ?? null;
 
@@ -142,7 +156,7 @@ class Essentials
 
     public static function registerSharedServices(...$services): Container
     {
-        if (count($services) === 1 && array_filter($services[0], 'is_array') == $services[0]) {
+        if (count($services) === 1 && array_filter($services[0], 'is_array') === $services[0]) {
             $services = $services[0];
         }
 
@@ -175,7 +189,7 @@ class Essentials
      * @param  \Monolog\Logger $logger A logger instance
      * @return void
      */
-    public static function registerDBLogger($entity_manager, $logger): void
+    public static function registerDBLogger($entity_manager, Logger $logger): void
     {
         $pdo = $entity_manager->getConnection()->getWrappedConnection();
         $mySQLHandler = new MySQLHandler($pdo, 'log', ['source', 'datetime'], Logger::DEBUG);
