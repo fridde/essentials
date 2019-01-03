@@ -8,10 +8,8 @@ use Symfony\Component\Yaml\Yaml;
 class Settings
 {
 
-    public static function setSettings(array $options = [])
+    public static function setSettings(array $options = []): ?array
     {
-        $arg_keys = ['files', 'dir', 'ext', 'cache'];
-
         $file_args = [
             'files' => $options['files'] ?? ['settings_default', 'nav'],
             'dir' => $options['dir'] ?? 'config',
@@ -23,7 +21,7 @@ class Settings
         $cache = $options['cache'] ?? null;
 
         $settings = self::getSettingsFromCache($cache);
-        $settings = $settings ?? self::getSettingsFromFiles($file_args);
+        $settings = $settings ?? self::getSettingsFromFiles(...$file_args);
 
         self::saveToCache($cache, ['settings' => $settings]);
 
