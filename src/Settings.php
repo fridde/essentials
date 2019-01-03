@@ -11,9 +11,9 @@ class Settings
     public static function setSettings(array $options = []): ?array
     {
         $file_args = [
-            'files' => $options['files'] ?? ['settings_default', 'nav'],
-            'dir' => $options['dir'] ?? 'config',
-            'ext' => $options['ext'] ?? 'yml'
+            $options['files'] ?? ['settings_default', 'nav'],
+            $options['dir'] ?? 'config',
+            $options['ext'] ?? 'yml'
         ];
         if (defined('ENVIRONMENT')) {
             $file_args['files'][] = 'settings_'.ENVIRONMENT;
