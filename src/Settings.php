@@ -10,32 +10,22 @@ class Settings
 
     public static function setSettings(array $options = [])
     {
-        $files = $options['files'] ?? ['settings_default', 'nav'];
-        $folder = $options['folder'] ?? 'config';
-        $ext = $options['ext'] ?? 'yml';
-        /* @var Cache $cache */
+        $arg_keys = ['files', 'dir', 'ext', 'cache'];
+
+        $file_args = [
+            'files' => $options['files'] ?? ['settings_default', 'nav'],
+            'dir' => $options['dir'] ?? 'config',
+            'ext' => $options['ext'] ?? 'yml'
+        ];
+        if (defined('ENVIRONMENT')) {
+            $file_args['files'][] = 'settings_'.ENVIRONMENT;
+        }
         $cache = $options['cache'] ?? null;
 
-        $settings = [];
+        $settings = self::getSettingsFromCache($cache);
+        $settings = $settings ?? self::getSettingsFromFiles($file_args);
 
-        if (defined('ENVIRONMENT')) {
-            $files[] = 'settings_'.ENVIRONMENT;
-        }
-
-        if (!empty($cache) && $cache->contains('settings')) {
-            $settings = $cache->fetch('settings');
-        } else {
-            foreach ($files as $file) {
-                $path = empty($folder) ? '' : $folder.'/';
-                $path .= $file;
-                $path .= empty($ext) ? '' : '.'.$ext;
-                $settings[] = self::getArrayFromFile($path);
-            }
-            $settings = array_replace_recursive(...$settings);
-            if (!empty($cache)) {
-                $cache->save('settings', $settings);
-            }
-        }
+        self::saveToCache($cache, ['settings' => $settings]);
 
         if (defined('SETTINGS')) {
             throw new \Exception('Can\'t redefine constant SETTINGS');
@@ -44,6 +34,40 @@ class Settings
         $GLOBALS['SETTINGS'] = $settings; // for backwards-compatibility
 
         return $settings;
+    }
+
+    private static function getSettingsFromCache(Cache $cache = null): ?array
+    {
+        if(! ($cache instanceof Cache)){
+            return null;
+        }
+        if(!$cache->contains('settings')){
+            return null;
+        }
+        return $cache->fetch('settings');
+    }
+
+    private static function getSettingsFromFiles(array $files = [], string $dir = null, string $ext): ?array
+    {
+        $settings = [];
+        foreach ($files as $file) {
+            $path = empty($dir) ? '' : $dir.'/';
+            $path .= $file;
+            $path .= empty($ext) ? '' : '.'.$ext;
+            $settings[] = self::getArrayFromFile($path);
+        }
+
+        return array_replace_recursive(...$settings);
+    }
+
+    private static function saveToCache(Cache $cache = null, array $items = []): void
+    {
+        if(!($cache instanceof Cache)){
+            return;
+        }
+        foreach($items as $id => $data){
+            $cache->save($id, $data);
+        }
     }
 
 
