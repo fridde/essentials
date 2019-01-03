@@ -16,7 +16,7 @@ class Settings
             $options['ext'] ?? 'yml'
         ];
         if (defined('ENVIRONMENT')) {
-            $file_args['files'][] = 'settings_'.ENVIRONMENT;
+            $file_args[0][] = 'settings_'.ENVIRONMENT;
         }
         $cache = $options['cache'] ?? null;
 
