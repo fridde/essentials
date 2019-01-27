@@ -8,6 +8,8 @@ use Symfony\Component\Yaml\Yaml;
 class Settings
 {
 
+    public const FLUSH_NOW_KEY = 'FLUSH_NOW';
+
     public static function setSettings(array $options = []): ?array
     {
         $file_args = [
@@ -39,9 +41,13 @@ class Settings
         if(! ($cache instanceof Cache)){
             return null;
         }
+        if($cache->contains(self::FLUSH_NOW_KEY)){ //i.e. currently keeps cleaning all records
+            return null;
+        }
         if(!$cache->contains('settings')){
             return null;
         }
+
         return $cache->fetch('settings');
     }
 
@@ -69,7 +75,7 @@ class Settings
     }
 
 
-    private static function getPossibleLocations()
+    private static function getPossibleLocations(): array
     {
         $loc[] = defined('BASE_DIR') ? BASE_DIR : null;
         $loc[] = $_SERVER['DOCUMENT_ROOT'];
@@ -78,7 +84,7 @@ class Settings
         return array_filter($loc);
     }
 
-    public static function getArrayFromFile($file)
+    public static function getArrayFromFile($file): array
     {
         $possible_locations = self::getPossibleLocations();
         foreach ($possible_locations as $dir) {
@@ -95,7 +101,7 @@ class Settings
         return self::getArray($path);
     }
 
-    private static function getArray($path)
+    private static function getArray($path): array
     {
         $ext = strtolower(pathinfo($path, PATHINFO_EXTENSION));
         switch ($ext) {
@@ -117,12 +123,12 @@ class Settings
         return self::$full_method_name($path);
     }
 
-    private static function getArrayFromYamlFile($path)
+    private static function getArrayFromYamlFile($path): array
     {
         return Yaml::parseFile($path);
     }
 
-    private static function getArrayFromJsonFile($path)
+    private static function getArrayFromJsonFile($path): array
     {
         $json_string = file_get_contents($path);
         if (!$json_string) {
@@ -132,7 +138,7 @@ class Settings
         return json_decode($json_string, true);
     }
 
-    private static function getArrayFromIniFile($path)
+    private static function getArrayFromIniFile($path): array
     {
         return parse_ini_file($path, true);
     }
