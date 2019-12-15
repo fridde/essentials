@@ -174,7 +174,7 @@ class Essentials
                     }
                 );
                 $container->share($service[0], $service[1])
-                    ->withArguments($const_args);
+                    ->addArguments($const_args);
             }
         }
         $GLOBALS['CONTAINER'] = $container;
